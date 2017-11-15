@@ -1,0 +1,77 @@
+#include <iostream>
+
+using namespace std;
+
+class series
+{
+public:
+	void print_series(int);
+	void reset(int = 0); // important
+	series(int = 1);
+	virtual ~series() {};
+protected:
+	virtual int next() = 0;
+
+protected:
+	int first;
+	int current;
+};
+
+void series::reset(int a)
+{
+	if (a != 0)
+		first = a;
+	current = first;
+}
+series::series(int a) :first(a), current(a) { cout << "base constructor called \n"; }
+
+void series::print_series(int n)
+{
+	cout << first << ' ';
+	for (int i = 1; i < n; ++i)
+		cout << next() << ' ';
+	cout << endl;
+	return;
+}
+
+class arith_series : public series
+{
+public:
+	arith_series(int, int);
+	virtual int next();
+	virtual ~arith_series() {};
+private:
+	int inc;
+};
+
+arith_series::arith_series(int a, int c) :series(a), inc(c) { cout << "derived constructor called \n"; }
+
+int arith_series::next()
+{
+	current += inc;
+	return current;
+}
+
+class geo_series : public series
+{
+public:
+	geo_series(int, int);
+	virtual int next();
+private:
+	int base;
+};
+
+geo_series::geo_series(int a, int b) :series(a), base(b) {}
+
+int geo_series::next()
+{
+	current *= base;
+	return current;
+}
+
+int main()
+{
+	series* aptr = new arith_series(1, 2);
+	
+	return 0;
+}
