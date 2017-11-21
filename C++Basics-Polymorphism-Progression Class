@@ -1,0 +1,64 @@
+#include <iostream>
+
+using namespace std;
+
+class seq {
+public:
+	seq(int f = 0) :first(f), cur(f) {}
+	virtual ~seq() {};
+	void print_seq(int n);
+protected:
+	int firstValue();//no need to be virtual
+	virtual int nextValue() = 0;
+protected://can be accessed by derived class
+	int first;
+	int cur;
+};
+
+void seq::print_seq(int n) {
+	cout << firstValue();
+	for (int i = 2; i <= n; ++i)
+		cout << ' ' << nextValue();
+	cout << '\n';
+}
+int seq::firstValue() {
+	cur = first;
+	return first;
+}
+
+class arith_seq:public seq {
+public:
+	arith_seq(int a = 0, int i = 0) :seq(a), inc(i) {}
+protected:
+	virtual int nextValue();
+private:
+	int inc;
+};
+
+int arith_seq::nextValue() {
+	cur += inc;
+	return cur;
+}
+
+class geo_seq :public seq {
+public:
+	geo_seq(int a = 1,int b = 0) :seq(a), base(b) {}
+protected:
+	virtual int nextValue();
+private:
+	int base;
+};
+
+int geo_seq::nextValue() {
+	cur *= base;
+	return cur;
+}
+
+int main() {
+	seq* p;
+	p = new arith_seq(1,5);
+	p->print_seq(10);
+	p = new geo_seq(1,2);
+	p->print_seq(10);
+	return 0;
+}
