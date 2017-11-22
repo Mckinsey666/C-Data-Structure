@@ -93,6 +93,21 @@ ostream& operator<<(ostream& output, bignum& num) {
 int main()
 {
 	int n;
+	while (cin >> n) {
+		stringstream one;
+		one << 1;
+		bignum fact;
+		one >> fact;
+		cout << n << "!\n";
+		for (int i = 1; i <= n; ++i) {
+			stringstream ss;
+			ss << i;
+			bignum x;
+			ss >> x;
+			fact = fact*x;
+		}
+		cout << fact << '\n';
+	}
 	return 0;
 }
 	
