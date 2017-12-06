@@ -1,0 +1,55 @@
+#include <iostream>
+#include <string>
+#include <cstring>
+#include <cctype>
+#include <vector>
+#include <set>
+#include <algorithm>
+
+using namespace std;
+
+class node {
+	friend class list;
+private:
+	node* next;
+	string element;
+};
+
+class list {
+public:
+	list();
+	~list();
+	bool empty() const;
+	const string& front() const;
+	void addFront(const string&);
+	void removeFront();
+private:
+	node* head;
+};
+
+list::list() :head(NULL) {}
+
+list::~list() {
+	while (!empty()) removeFront();
+}
+
+bool list::empty() const {
+	return head == NULL;
+}
+
+const string& list::front() const {
+	return head->element;
+}
+
+void list::addFront(const string& s) {
+	node* v = new node;
+	v->element = s;
+	v->next = head;
+	head = v;
+}
+
+void list::removeFront() {
+	node* temp = head;
+	head = temp->next;
+	delete temp;
+}
