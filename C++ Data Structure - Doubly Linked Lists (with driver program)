@@ -1,0 +1,146 @@
+#include <iostream>
+#include <string>
+#include <cstring>
+#include <cctype>
+#include <vector>
+#include <set>
+#include <algorithm>
+
+using namespace std;
+
+class node {
+	friend class dblist;
+private:
+	node* prev;
+	node* next;
+	string element;
+};
+
+class dblist {
+public:
+	dblist();
+	~dblist();
+	bool empty() const;
+	const string& front() const;
+	const string& back() const;
+	void addFront(const string&);
+	void addBack(const string&);
+	void removeFront();
+	void removeBack();
+	void print() const;
+private:
+//Dummy nodes just to indicate head and tail of a list
+	node* header;
+	node* trailer;
+protected:
+//Utility functions
+	void add(node*, const string&);
+	void remove(node*);
+};
+
+dblist::dblist() {
+	header = new node;
+	trailer = new node;
+//Empty list, head and tail points to each other
+	header->next = trailer; header->prev = 0;
+	trailer->prev = header; trailer->next = 0;
+}
+
+dblist::~dblist() {
+	//Every node is dynamically allocated
+	while (!empty()) removeFront();
+	delete header;
+	delete trailer;
+}
+
+bool dblist::empty() const {
+	return (header->next == trailer);
+}
+
+const string& dblist::front() const {
+	return header->next->element;
+}
+
+const string& dblist::back() const {
+	return trailer->prev->element;
+}
+
+void dblist::add(node* v, const string& s) {
+	node* u = new node; u->element = s;
+	u->next = v;
+	u->prev = v->prev;
+//Why not v->prev->next = v->prev = u;
+	v->prev->next = u;
+	v->prev = u;
+}
+
+void dblist::addFront(const string& s) {
+	add(header->next, s);
+}
+
+void dblist::addBack(const string& s) {
+	add(trailer, s);
+}
+
+void dblist::remove(node* p) {
+	p->prev->next = p->next;
+	p->next->prev = p->prev;
+	delete p;
+}
+
+void dblist::removeFront() {
+	remove(header->next);
+}
+
+void dblist::removeBack() {
+	remove(trailer->prev);
+}
+
+void dblist::print() const {
+	node* p = header;
+	while (p->next != 0) {
+		cout << p->next->element << ' ';
+		p = p->next;
+	}
+	cout << '\n';
+}
+
+
+
+
+
+
+
+
+int main() {
+	dblist ls;
+	int c;
+	string s;
+	cout << "Commands for Doubly Linked Lists:\n";
+	cout << "---------------------------------\n";
+	cout << "| 1: add element from front     |\n";
+	cout << "| 2: add element from back      |\n";
+	cout << "| 3: get front element          |\n";
+	cout << "| 4: get back element           |\n";
+	cout << "| 5: remove front element       |\n";
+	cout << "| 6: remove back element        |\n";
+	cout << "| 7: print doubly linekd list   |\n";
+	cout << "---------------------------------\n";
+	while (true) {
+		cout << "Please enter command: ";
+		cin >> c;
+		switch (c)
+		{
+		case 1: cout << "Enter element to add: "; cin >> s; ls.addFront(s); break;
+		case 2: cout << "Enter element to add: "; cin >> s; ls.addBack(s); break;
+		case 3: cout << ls.front() << '\n'; break;
+		case 4: cout << ls.back() << '\n'; break;
+		case 5: ls.removeFront(); break;
+		case 6: ls.removeBack(); break;
+		case 7: ls.print(); break;
+		default: cout << "Invalid command!\n";
+		}
+		cout << '\n';
+	}
+	return 0;
+}
