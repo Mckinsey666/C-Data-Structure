@@ -1,0 +1,107 @@
+#include <iostream>
+#include <string>
+#include <cstring>
+#include <cctype>
+#include <vector>
+#include <set>
+#include <algorithm>
+
+using namespace std;
+typedef string type;
+
+class node {
+	friend class Clist;
+private:
+	node* next;
+	type element;
+};
+
+class Clist {
+public:
+	Clist();
+	~Clist();
+	bool empty() const;
+	const type& front() const;
+	const type& back() const;
+	void advance();
+	void remove();
+	void add(const type&);
+private:
+	node* cursor;
+};
+
+Clist::Clist() : cursor(NULL) {}
+
+Clist::~Clist() {
+	while (!empty())
+		remove();
+}
+
+bool Clist::empty() const{
+	return cursor == NULL;
+}
+
+const type& Clist::back() const {
+	return cursor->element;
+}
+
+const type& Clist::front() const {
+	return cursor->next->element;
+}
+
+void Clist::advance() {
+	cursor = cursor->next;
+}
+
+void Clist::remove() {
+	node* old = cursor->next;
+	if (old == cursor)
+		cursor = NULL;
+	else
+		cursor->next = old->next;
+	delete old;
+}
+
+void Clist::add(const type& n) {
+	node* v = new node; v->element = n;
+	if (cursor == NULL) {
+		v->next = v;
+		cursor = v;
+	}
+	else {
+		v->next = cursor->next;
+		cursor->next = v;
+	}
+}
+
+
+int main() {
+	Clist cls;
+	int c;
+	string s;
+	cout << "Commands for Doubly Linked Lists:\n";
+	cout << "---------------------------------\n";
+	cout << "| 1: add node after cursor      |\n";
+	cout << "| 2: remove node after cursor   |\n";
+	cout << "| 3: get front element          |\n";
+	cout << "| 4: get back element           |\n";
+	cout << "| 5: advance cursor             |\n";
+	cout << "| 6: advance and print          |\n";
+	cout << "---------------------------------\n";
+	while (true) {
+		cout << "Please enter command: ";
+		cin >> c;
+		switch(c)
+		{
+			case 1: cout << "Enter element to add: "; cin >> s; cls.add(s); break;
+			case 2: cls.remove(); break;
+			case 3: cout << cls.front() << '\n'; break;
+			case 4: cout << cls.back() << '\n'; break;
+			case 5: cls.advance(); break;
+			case 6: cls.advance(); cout << cls.front() << '\n'; break;
+			default: cout << "Invalid command!\n"; break;
+		}
+		cout << '\n';
+	}
+	return 0;
+}
