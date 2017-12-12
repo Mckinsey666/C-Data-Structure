@@ -50,6 +50,8 @@ const type& Clist::front() const {
 }
 
 void Clist::advance() {
+	if(cursor == NULL)
+		return;
 	cursor = cursor->next;
 }
 
