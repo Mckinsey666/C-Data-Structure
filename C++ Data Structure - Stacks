@@ -1,0 +1,54 @@
+#include <iostream>
+using namespace std;
+
+template<class T> class Stack {
+public:
+	Stack();
+	~Stack();
+	void push(const T&);
+	void pop();
+	bool empty();
+	T top();
+private:
+	int len;
+	T* stk;
+};
+
+template<class T> Stack<T>::Stack() { len = 0; }
+template<class T> Stack<T>::~Stack() { delete[]stk; }
+template<class T> void Stack<T>::push(const T& object) {
+	T* new_stack = new T[len + 1];
+	for (int i = 0; i < len; ++i)
+		new_stack[i] = stk[i];
+	new_stack[len] = object;
+	delete[]stk;
+	stk = new_stack; len++;
+}
+template<class T> void Stack<T>::pop() {
+	len--;
+	T* new_stack = new T[len];
+	for (int i = 0; i < len; ++i)
+		new_stack[i] = stk[i];
+	delete[]stk;
+	stk = new_stack;
+}
+template<class T> T Stack<T>::top() {
+	return stk[len - 1];
+}
+template<class T> bool Stack<T>::empty() {
+	return (len == 0);
+}
+int main()
+{
+	Stack<int>myint;
+	if (myint.empty())
+		cout << "Current stack is empty.\n";
+	for (int i = 1; i <= 5; ++i)
+		myint.push(i);
+	while (!myint.empty()) {
+		cout << "Stack top: " << myint.top() << '\n';
+		myint.pop();
+	}
+    return 0;
+}
+
