@@ -1,0 +1,83 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+//Priority Queue
+
+template<class T> class PQ {
+public:
+	PQ();
+	~PQ();
+	void insert(const T&);
+	void remove();
+	T top();
+	bool empty();
+private:
+//array of size sz+1, index starts at 1.
+	T* pq;
+	int sz;
+	void promote(int);
+	void sink(int);
+};
+
+template<class T> PQ<T>::PQ() {
+	sz = 0;
+	pq = new T[1];
+}
+template<class T> PQ<T>::~PQ() {
+	delete pq;
+}
+template<class T> void PQ<T>::promote(int i) {
+	while (i > 1 && (pq[i] > pq[i / 2])) {
+		swap(pq[i], pq[i / 2]);
+		i /= 2;
+	}
+}
+template<class T> void PQ<T>::sink(int i) {
+	while (2 * i <= sz) {
+		int j = 2 * i;
+		if (j + 1 <= sz&&pq[j + 1] > pq[j])j++;
+		if (pq[i] > pq[j])break;
+		swap(pq[i], pq[j]);
+		i = j;
+	}
+}
+template<class T> void PQ<T>::insert(const T& object) {
+	++sz;
+	T* new_pq = new T[sz + 1];
+	for (int i = 1; i <= sz - 1; ++i)
+		new_pq[i] = pq[i];
+	new_pq[sz] = object;
+	delete pq; pq = new_pq;
+	promote(sz);
+}
+template<class T> void PQ<T>::remove() {
+	swap(pq[1], pq[sz]);
+	T* new_pq = new T[sz--];
+	for (int i = 1; i <= sz; ++i)
+		new_pq[i] = pq[i];
+	delete pq; pq = new_pq;
+	sink(1);
+}
+template<class T> bool PQ<T>::empty() {
+	return sz == 0;
+}
+template<class T> T PQ<T>::top() {
+	return pq[1];
+}
+
+int main()
+{
+	int n;
+	PQ<int> pq;
+	while (cin >> n)
+		pq.insert(n);
+	while (!pq.empty()) {
+		cout << pq.top() << ' ';
+		pq.remove();
+	}
+	return 0;
+}
+
+
