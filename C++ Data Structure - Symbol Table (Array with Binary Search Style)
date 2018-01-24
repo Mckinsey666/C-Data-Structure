@@ -1,0 +1,107 @@
+#include "stdafx.h"
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <string>
+#include <cmath>
+#include <queue>
+#include <functional>
+#include <time.h>
+#include <cstdlib>
+using namespace std;
+//80% Finished
+template<class A,class B> class pairs{
+	template<class A, class B> friend class ST;
+public:
+	pairs(A a, B b) :key(a), val(b) {};
+	pairs() {};
+	A get_key() { return key; }
+private:
+	A key;
+	B val;
+};
+
+template<class A, class B> class ST {
+public:
+	ST();
+	~ST();
+	void insert(const A&, const B&);
+	void remove(const A&);
+	bool contain(const A&);
+	bool empty();
+	int size();
+	void traverse();
+private:
+	int sz;
+	pairs<A, B>* st;
+
+	int search(const A&);
+	bool comp(const pairs<A,B>&, const pairs<A,B>&);
+	void STsort();
+};
+
+template<class A, class B> ST<A, B>::ST() {
+	sz = 0;
+	st = NULL;
+}
+template<class A, class B> ST<A, B>::~ST() {
+	delete st;
+}
+template<class A, class B> int ST<A, B>::search(const A& _key) {
+	if (empty())return -1;
+	int low = 0, high = sz - 1;
+	while (low <= high) {
+		int mid = low + (high - low) / 2;
+		if (st[mid].key == _key)
+			return mid;
+		else if (st[mid].key > _key) high = mid - 1;
+		else low = mid + 1;
+	}
+	return -1;
+}
+
+template<class A, class B> bool ST<A, B>::comp(const pairs<A,B>& p1, const pairs<A,B>& p2) {
+	return p1.get_key() < p2.get_key();
+}
+template<class A, class B> void ST<A, B>::STsort() {
+	sort(st, st + sz, comp);
+}
+
+template<class A, class B> bool ST<A, B>::contain(const A& _key) {
+	return search(_key) != -1;
+}
+template<class A, class B> bool ST<A, B>::empty() {
+	return sz == 0;
+}
+template<class A, class B> int ST<A, B>::size() {
+	return sz;
+}
+template<class A, class B> void ST<A, B>::insert(const A& _key, const B& _val) {
+	int i = search(_key);
+	if (i != -1) st[i].val = _val;
+	else {
+		pairs<A, B>* temp = new pairs<A, B>[sz+1];
+		for (int i = 0; i < sz; ++i)
+			temp[i] = st[i];
+		temp[sz] = pairs<A, B>(_key, _val); sz++;
+		delete st;
+		st = temp;
+	}
+	STsort();
+}
+template<class A, class B> void ST<A, B>::traverse() {
+	for (int i = 0; i < sz; ++i)
+		cout << st[i].key << ": " << st[i].val << "\n";
+}
+int main() {
+	ST<char, string> st;
+	st.insert('e', "hello");
+	st.insert('r', "good");
+	st.insert('a', "apple");
+	st.insert('w', "there");
+	st.insert('c', "book");
+	st.traverse();
+	return 0;
+}
+
+
