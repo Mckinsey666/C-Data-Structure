@@ -73,30 +73,6 @@ template<class A, class B> B BST<A, B>::get(const A& _key) {
 		else p = p->right;
 	}
 }
-template<class A, class B> node<A, B>* BST<A, B>::max_node(node<A, B>* x) {
-	if (x->left == NULL) return x;
-	x->left = max_node(x->left);
-	return x;
-}
-template<class A, class B> node<A, B>* BST<A, B>::min_node(node<A, B>* x) {
-	if (x->right == NULL) return x;
-	x->right = min_node(x->right);
-	return x;
-}
-
-template<class A, class B> void BST<A, B>::insert(const A& _key, const B& _val) {
-	root = put(root, _key, _val);
-}
-template<class A, class B> void BST<A, B>::remove(const A& _key) {
-	if (!contain(_key)) return;
-	root = del(_key, root);
-}
-template<class A, class B> void BST<A, B>::remove_max() {
-	root = del_max(root);
-}
-template<class A, class B> void BST<A, B>::remove_min() {
-	root = del_min(root);
-}
 template<class A, class B> A BST<A, B>::max() {
 	node<A, B>* p = root;
 	A _max;
@@ -114,6 +90,31 @@ template<class A, class B> A BST<A, B>::min() {
 		p = p->right;
 	}
 	return _min;
+}
+template<class A, class B> void BST<A, B>::insert(const A& _key, const B& _val) {
+	root = put(root, _key, _val);
+}
+template<class A, class B> void BST<A, B>::remove(const A& _key) {
+	if (!contain(_key)) return;
+	root = del(_key, root);
+}
+template<class A, class B> void BST<A, B>::remove_max() {
+	root = del_max(root);
+}
+template<class A, class B> void BST<A, B>::remove_min() {
+	root = del_min(root);
+}
+
+
+template<class A, class B> node<A, B>* BST<A, B>::max_node(node<A, B>* x) {
+	if (x->left == NULL) return x;
+	x->left = max_node(x->left);
+	return x;
+}
+template<class A, class B> node<A, B>* BST<A, B>::min_node(node<A, B>* x) {
+	if (x->right == NULL) return x;
+	x->right = min_node(x->right);
+	return x;
 }
 
 template<class A, class B> bool BST<A, B>::contain(const A& _key) {
@@ -159,7 +160,8 @@ template<class A, class B> node<A, B>* BST<A, B>::del_max(node<A, B>* x) {
 }
 
 template<class A, class B> node<A, B>* BST<A, B>::del(const A& _key, node<A, B>* x) {
-//Hibbard deletion, memory allocation needs to be carefully determined when using recusive functions
+//Hibbard deletion
+//Memory allocation needs to be carefully analyzed when dealing with recursive functions
 	if (x == NULL) return NULL;
 	if (_key < x->key) x->left = del(_key, x->left);
 	else if (_key > x->key) x->right = del(_key, x->right);
@@ -176,11 +178,21 @@ template<class A, class B> node<A, B>* BST<A, B>::del(const A& _key, node<A, B>*
 			delete x;
 			return v;
 		}
-
+//Better method of deletion of node with two children
+		srand(time(NULL));
+		int i = rand() % 100000000;
+		
 		node<A, B>*  temp = x;
-		x = min_node(temp->right);
-		x->right = del_min(temp->right);
-		x->left = temp->left;
+		if (i > 50000000) {
+			x = min_node(temp->right);
+			x->right = del_min(temp->right);
+			x->left = temp->left;
+		}
+		else {
+			x = max_node(temp->left);
+			x->left = del_max(temp->left);
+			x->right = temp->right;
+		}
 		delete temp;
 	}
 	return x;
