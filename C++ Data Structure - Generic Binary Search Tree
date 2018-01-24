@@ -1,0 +1,202 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <string>
+#include <cmath>
+#include <queue>
+#include <functional>
+#include <time.h>
+#include <cstdlib>
+#include <queue>
+using namespace std;
+
+template<class A, class B> class node {
+	template<class A, class B> friend class BST;
+public:
+	node() {};
+	node(A a, B b) :key(a), val(b), left(NULL), right(NULL) {};
+	~node() { delete left; delete right; }
+	A get_key() { return key; }
+	B get_val() { return val; }
+private:
+	A key;
+	B val;
+	node<A, B>* left;
+	node<A, B>* right;
+};
+
+template<class A, class B> class BST {
+public:
+	BST();
+	~BST();
+	void insert(const A&, const B&);
+	void remove(const A&);
+	void remove_max();
+	void remove_min();
+
+	bool contain(const A&);
+	bool empty();
+
+	B get(const A&);
+//Ordered operations
+	A max();
+	A min();
+	queue<A> it();
+private:
+	node<A, B>* root;
+//Utility functions to facilitate insert and remove operations
+	node<A, B>* put(node<A, B>*, const A&, const B&);
+	node<A, B>* del(const A&, node<A, B>*);
+
+	node<A, B>* del_min(node<A, B>*);
+	node<A, B>* del_max(node<A, B>*);
+	node<A, B>* min_node(node<A, B>*);
+	node<A, B>* max_node(node<A, B>*);
+
+	void get_keys(node<A, B>*, queue<A>&);
+};
+template<class A, class B> BST<A, B>::BST() {
+	root = NULL;
+}
+template<class A, class B> BST<A, B>::~BST() {
+//Will recursively call a node destructor, which recursively deletes left right pointers
+	delete root;
+}
+
+template<class A, class B> B BST<A, B>::get(const A& _key) {
+	if (!contain(_key)) return B();
+	node<A, B>* p = root;
+	while (p != NULL) {
+		if (p->key == _key)
+			return p->val;
+		else if (_key < p->key)p = p->left;
+		else p = p->right;
+	}
+}
+template<class A, class B> node<A, B>* BST<A, B>::max_node(node<A, B>* x) {
+	if (x->left == NULL) return x;
+	x->left = max_node(x->left);
+	return x;
+}
+template<class A, class B> node<A, B>* BST<A, B>::min_node(node<A, B>* x) {
+	if (x->right == NULL) return x;
+	x->right = min_node(x->right);
+	return x;
+}
+
+template<class A, class B> void BST<A, B>::insert(const A& _key, const B& _val) {
+	root = put(root, _key, _val);
+}
+template<class A, class B> void BST<A, B>::remove(const A& _key) {
+	if (!contain(_key)) return;
+	root = del(_key, root);
+}
+template<class A, class B> void BST<A, B>::remove_max() {
+	root = del_max(root);
+}
+template<class A, class B> void BST<A, B>::remove_min() {
+	root = del_min(root);
+}
+template<class A, class B> A BST<A, B>::max() {
+	node<A, B>* p = root;
+	A _max;
+	while (p != NULL) {
+		_max = p->key;
+		p = p->right;
+	}
+	return _max;
+}
+template<class A, class B> A BST<A, B>::min() {
+	node<A, B>* p = root;
+	A _min;
+	while (p != NULL) {
+		_min = p->key;
+		p = p->right;
+	}
+	return _min;
+}
+
+template<class A, class B> bool BST<A, B>::contain(const A& _key) {
+	node<A, B>* p = root;
+	while (p != NULL) {
+		if (p->key == _key)
+			return true;
+		else if (_key < p->key)p = p->left;
+		else p = p->right;
+	}
+	return false;
+}
+template<class A, class B> bool BST<A, B>::empty() {
+	return first == NULL;
+}
+
+template<class A, class B> node<A,B>* BST<A, B>::put(node<A, B>* x, const A& _key, const B& _val) {
+	if (x == NULL) return new node<A, B>(_key, _val);
+	if (_key > x->key) x->right = put(x->right, _key, _val);
+	else if (_key < x->key) x->left = put(x->left, _key, _val);
+	else x->val = _val;
+	return x;
+}
+template<class A, class B> node<A, B>* BST<A, B>::del_min(node<A, B>* x) {
+	if (x->left == NULL) {
+		node<A, B>* v = x->right;
+		x->right = NULL;
+		delete x;
+		return v;
+	}
+	x->left = del_min(x->left);
+	return x;
+}
+template<class A, class B> node<A, B>* BST<A, B>::del_max(node<A, B>* x) {
+	if (x->right == NULL) {
+		node<A, B>* v = x->left;
+		x->left = NULL;
+		delete x;
+		return v;
+	}
+	x->right = del_max(x->right);
+	return x;
+}
+template<class A, class B> node<A, B>* BST<A, B>::del(const A& _key, node<A, B>* x) {
+//Hibbard deletion
+	if (x == NULL) return NULL;
+	if (_key < x->key) x->left = del(_key, x->left);
+	else if (_key > x->key) x->right = del(_key, x->right);
+	else {
+		if (x->left == NULL) return x->right;
+		if (x->right == NULL) return x->left;
+
+		node<A, B>*  temp = x;
+		x = min_node(temp->right);
+		x->right = del_min(temp->right);
+		x->left = temp->left;
+		delete temp;
+	}
+	return x;
+}
+template<class A, class B> void BST<A, B>::get_keys(node<A, B>* x, queue<A>& q) {
+	if (x == NULL) return;
+	get_keys(x->left, q);
+	q.push(x->key);
+	get_keys(x->right, q);
+}
+template<class A, class B> queue<A> BST<A, B>::it() {
+	queue<A> q;
+	get_keys(root, q);
+	return q;
+}
+
+int main() {
+	BST<char, string>bst;
+	
+	bst.insert('b', "book");
+	bst.insert('d', "dance");
+	bst.insert('e', "egg");
+	bst.insert('c', "cookie");
+	bst.insert('a', "apple");
+	bst.insert('e', "elephant");
+	
+	return 0;
+}
+
+
