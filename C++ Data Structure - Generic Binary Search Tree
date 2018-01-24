@@ -1,4 +1,3 @@
-//Remove needs modification
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -160,18 +159,20 @@ template<class A, class B> node<A, B>* BST<A, B>::del_max(node<A, B>* x) {
 }
 
 template<class A, class B> node<A, B>* BST<A, B>::del(const A& _key, node<A, B>* x) {
-//Hibbard deletion
+//Hibbard deletion, memory allocation needs to be carefully determined when using recusive functions
 	if (x == NULL) return NULL;
 	if (_key < x->key) x->left = del(_key, x->left);
 	else if (_key > x->key) x->right = del(_key, x->right);
 	else {
 		if (x->left == NULL) {
 			node<A, B>* v = x->right;
+			x->right = NULL;
 			delete x; 
 			return v;
 		}
 		if (x->right == NULL) {
 			node<A, B>* v = x->left;
+			x->left = NULL;
 			delete x;
 			return v;
 		}
@@ -226,9 +227,9 @@ int main() {
 		q.pop();
 	}
 	cout << '\n';
-	cout << "Removed key max and min:\n";
-	bst.remove_max();
-	bst.remove_min();
+	cout << "Removed key a and e:\n";
+	bst.remove('a');
+	bst.remove('e');
 	q = bst.keys();
 	while (!q.empty()) {
 		char c = q.front();
