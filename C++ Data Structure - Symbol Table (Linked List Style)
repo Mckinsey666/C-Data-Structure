@@ -1,0 +1,118 @@
+#include "stdafx.h"
+#include <iostream>
+using namespace std;
+
+template<class A, class B> class node {
+	template<class A, class B> friend class ST;
+private:
+	A key;
+	B val;
+	node<A, B>* next;
+};
+
+template<class A, class B> class ST {
+public:
+	ST();
+	~ST();
+	void insert(const A&, const B&);
+	void remove(const A&);
+	bool contain(const A&);
+	bool empty();
+	int size() { return sz; }
+	B get(const A&);
+	void traverse();
+private:
+	int sz;
+	node<A,B>* first;
+	void remove_first();
+};
+
+template<class A, class B> ST<A,B>::ST() {
+	sz = 0;
+	first = NULL;
+}
+template<class A, class B> ST<A, B>::~ST() {
+	while (!empty()) remove_first();
+}
+template<class A, class B> void ST<A, B>::remove_first() {
+	node<A, B>* old = first;
+	first = old->next;
+	delete old;
+}
+template<class A, class B> bool ST<A, B>::empty() {
+	return first == NULL;
+}
+template<class A, class B> bool ST<A, B>::contain(const A& _key) {
+	if (empty()) return false;
+	node<A, B>* p = first;
+	while (p != NULL) {
+		if (p->key == _key)
+			return true;
+		p = p->next;
+	}
+	return false;
+}
+template<class A, class B> B ST<A, B>::get(const A& _key) {
+	if (empty()) return NULL;
+	node<A, B>* p = first;
+	while (p != NULL) {
+		if (p->key == _key)
+			return p->val;
+		p = p->next;
+	}
+	return NULL;
+}
+template<class A, class B> void ST<A, B>::insert(const A& _key, const B& _val) {
+	node<A, B>* p = first;
+//Update key value.
+	while (p != NULL) {
+		if (p->key == _key) {
+			p->val = _val;
+			return;
+		}
+		p = p->next;
+	}
+//Or create new key.
+	sz++;
+	node<A,B>* new_node = new node<A,B>;
+	new_node->key = _key;
+	new_node->val = _val;
+	new_node->next = first;
+	first = new_node;
+}
+template<class A, class B> void ST<A, B>::remove(const A& _key) {
+	if (!contain(_key)) return;
+	sz--;
+	node<A, B>* p = first;
+//Keep track of previous node.
+	node<A, B>* prev = NULL;
+//Boundary case: first item is key to find.
+	if (first->key == _key) remove_first();
+	else {
+		while (p != NULL) {
+			if (p->key == _key) {
+				prev->next = p->next;
+				delete p;
+				return;
+			}
+			prev = p;
+			p = p->next;
+		}
+	}
+	return;
+}
+template<class A, class B> void ST<A, B>::traverse() {
+	node<A, B>* p = first;
+	while (p != NULL) {
+		cout << p->key << ": " << p->val << '\n';
+		p = p->next;
+	}
+	return;
+}
+
+int main() {
+	ST<int, char> st;
+	return 0;
+}
+
+
