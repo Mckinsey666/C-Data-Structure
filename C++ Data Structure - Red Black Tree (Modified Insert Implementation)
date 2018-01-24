@@ -1,0 +1,94 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <string>
+#include <cmath>
+#include <queue>
+#include <functional>
+#include <time.h>
+#include <cstdlib>
+#include <queue>
+using namespace std;
+
+template<class A, class B> class node {
+	template<class A, class B> friend class RBT;
+public:
+	node() {};
+	node(A a, B b, bool col) :key(a), val(b), color(col),left(NULL), right(NULL) {};
+	~node() { delete left; delete right; }
+private:
+	A key;
+	B val;
+	node<A, B>* left;
+	node<A, B>* right;
+//Represents color of the link from parent node.
+	bool color;
+	static bool RED;
+	static bool BLACK;
+};
+
+template<class A, class B> bool node<A, B>::RED = true;
+template<class A, class B> bool node<A, B>::BLACK = false;
+
+
+template<class A, class B> class RBT {
+public:
+	RBT();
+	~RBT();
+	void insert(const A&, const B&);
+//Remaining functions are identical to that of BST
+private:
+	node<A, B>* root;
+	node<A, B>* put(node<A, B>*, const A&, const B&);
+	node<A, B>* rotate_left(node<A, B>*);
+	node<A, B>* rotate_right(node<A, B>*);
+	void split(node<A, B>*)
+	bool red(node<A, B>*);
+};
+template<class A, class B> bool RBT<A, B>::red(node<A,B>* x) {
+	if (x == NULL) return false;
+	return x->color;
+}
+template<class A, class B> node<A,B>* RBT<A, B>::rotate_left(node<A,B>* h) {
+	node<A, B>* x = h->right;
+	h->right = x->left;
+	x->left = h;
+	x->color = h->color;
+	h->color = RED;
+	return x;
+}
+template<class A, class B> node<A, B>* RBT<A, B>::rotate_right(node<A, B>* h) {
+	node<A, B>* x = h->left;
+	h->left = x->right;
+	x->right = h;
+	x->color = h->color;
+	h->color = RED;
+	return x;
+}
+template<class A, class B> void RBT<A, B>::split(node<A,B>* x) {
+	x->color = RED;
+	if (x->left != NULL) x->left->color = BLACK;
+	if (x->right != NULL) x->right->color = BLACK;
+}
+template<class A, class B> void RBT<A, B>::insert(const A& _key, const B& _val) {
+	root = put(root, _key, _val);
+}
+template<class A, class B> node<A, B>* RBT<A, B>::put(node<A, B>* x, const A& _key, const B& _val) {
+	if (x == NULL) return new node<A, B>(_key, _val, RED);
+	if (_key < x->key) x->left = put(x->left, _key, _val);
+	else if (_key > x->key) x->right = put(x->right, _key, _val);
+	else x->val = _val;
+
+	if (red(x->right) && !red(x - left)) x = rotate_left(x);
+	if (red(x->left&&red(x->left->left))) x = rotate_right(x);
+	if (red(x->right) && red(x->left)) split(x);
+
+	return x;
+}
+
+int main() {
+	
+	return 0;
+}
+
+
