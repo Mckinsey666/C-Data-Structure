@@ -1,3 +1,4 @@
+//Remove needs modification
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -41,7 +42,7 @@ public:
 //Ordered operations
 	A max();
 	A min();
-	queue<A> it();
+	queue<A> keys();
 private:
 	node<A, B>* root;
 //Utility functions to facilitate insert and remove operations
@@ -127,7 +128,7 @@ template<class A, class B> bool BST<A, B>::contain(const A& _key) {
 	return false;
 }
 template<class A, class B> bool BST<A, B>::empty() {
-	return first == NULL;
+	return root == NULL;
 }
 
 template<class A, class B> node<A,B>* BST<A, B>::put(node<A, B>* x, const A& _key, const B& _val) {
@@ -157,14 +158,23 @@ template<class A, class B> node<A, B>* BST<A, B>::del_max(node<A, B>* x) {
 	x->right = del_max(x->right);
 	return x;
 }
+
 template<class A, class B> node<A, B>* BST<A, B>::del(const A& _key, node<A, B>* x) {
 //Hibbard deletion
 	if (x == NULL) return NULL;
 	if (_key < x->key) x->left = del(_key, x->left);
 	else if (_key > x->key) x->right = del(_key, x->right);
 	else {
-		if (x->left == NULL) return x->right;
-		if (x->right == NULL) return x->left;
+		if (x->left == NULL) {
+			node<A, B>* v = x->right;
+			delete x; 
+			return v;
+		}
+		if (x->right == NULL) {
+			node<A, B>* v = x->left;
+			delete x;
+			return v;
+		}
 
 		node<A, B>*  temp = x;
 		x = min_node(temp->right);
@@ -180,7 +190,7 @@ template<class A, class B> void BST<A, B>::get_keys(node<A, B>* x, queue<A>& q) 
 	q.push(x->key);
 	get_keys(x->right, q);
 }
-template<class A, class B> queue<A> BST<A, B>::it() {
+template<class A, class B> queue<A> BST<A, B>::keys() {
 	queue<A> q;
 	get_keys(root, q);
 	return q;
@@ -194,8 +204,37 @@ int main() {
 	bst.insert('e', "egg");
 	bst.insert('c', "cookie");
 	bst.insert('a', "apple");
-	bst.insert('e', "elephant");
+
+	queue<char> q = bst.keys();
+	while (!q.empty()) {
+		char c = q.front();
+		cout << c << ": " << bst.get(c) << '\n';
+		q.pop();
+	}
+	cout << '\n';
+	cout << "Changed value of key b, d, a:\n";
+	bst.insert('b', "banana");
+	bst.insert('d', "dragon");
+	bst.insert('e', "egg");
+	bst.insert('c', "cookie");
+	bst.insert('a', "angry");
 	
+	q = bst.keys();
+	while (!q.empty()) {
+		char c = q.front();
+		cout << c << ": " << bst.get(c) << '\n';
+		q.pop();
+	}
+	cout << '\n';
+	cout << "Removed key max and min:\n";
+	bst.remove_max();
+	bst.remove_min();
+	q = bst.keys();
+	while (!q.empty()) {
+		char c = q.front();
+		cout << c << ": " << bst.get(c) << '\n';
+		q.pop();
+	}
 	return 0;
 }
 
