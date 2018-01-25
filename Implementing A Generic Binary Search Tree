@@ -52,7 +52,9 @@ public:
 	queue<A> keys();
 private:
 	node<A, B>* root;
-//Utility functions to facilitate insert and remove operations
+	
+// Utility functions to facilitate insert and remove operations. 
+
 	node<A, B>* put(node<A, B>*, const A&, const B&);
 	node<A, B>* del(const A&, node<A, B>*);
 
@@ -63,11 +65,12 @@ private:
 
 	void get_keys(node<A, B>*, queue<A>&);
 };
+
 template<class A, class B> BST<A, B>::BST() {
 	root = NULL;
 }
+
 template<class A, class B> BST<A, B>::~BST() {
-//Will recursively call a node destructor, which recursively deletes left right pointers
 	delete root;
 }
 
@@ -75,17 +78,20 @@ template<class A, class B> B BST<A, B>::get(const A& _key) {
 	if (!contain(_key)) return B();
 	node<A, B>* p = root;
 	while (p != NULL) {
-		if (p->key == _key)
-			return p->val;
+		if (p->key == _key) return p->val;
+	//Binary tree characteristic
 		else if (_key < p->key)p = p->left;
 		else p = p->right;
 	}
 }
+
 template<class A, class B> A BST<A, B>::max() {
 	node<A, B>* p = root;
 	A _max;
 	while (p != NULL) {
 		_max = p->key;
+		
+	//Continue to move left until reaches null.
 		p = p->right;
 	}
 	return _max;
@@ -95,10 +101,15 @@ template<class A, class B> A BST<A, B>::min() {
 	A _min;
 	while (p != NULL) {
 		_min = p->key;
-		p = p->right;
+		
+	//Continue to move left until reaches null.
+		p = p->left;
 	}
 	return _min;
 }
+
+//Public memeber functions calls private functions with recursive characteristic. 
+
 template<class A, class B> void BST<A, B>::insert(const A& _key, const B& _val) {
 	root = put(root, _key, _val);
 }
@@ -205,6 +216,7 @@ template<class A, class B> node<A, B>* BST<A, B>::del(const A& _key, node<A, B>*
 	}
 	return x;
 }
+
 template<class A, class B> void BST<A, B>::get_keys(node<A, B>* x, queue<A>& q) {
 	if (x == NULL) return;
 	get_keys(x->left, q);
