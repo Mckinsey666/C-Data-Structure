@@ -1,0 +1,95 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <string>
+#include <cmath>
+#include <queue>
+#include <functional>
+#include <time.h>
+#include <cstdlib>
+#include <queue>
+#include <map>
+#include <sstream>
+#include <list>
+#include <stack>
+
+using namespace std;
+
+// Lazy graph API implementation (vector + linked list)
+// Graph represented in adjacency lists.
+
+class Graph {
+public:
+	Graph(int, int);
+	Graph(int);
+	~Graph();
+	void add_vertex();
+	void add_edge(int, int);
+
+//Determines whether two vertices are connected.
+	bool connected(int, int);
+	int v();
+//Returns the adjacent vertices of a vertex i.
+	list<int> adjacent_vertices(int);
+
+	void show_connection();
+private:
+	vector<list<int> >adlist;
+};
+
+
+Graph::~Graph() {}
+Graph::Graph(int n) {
+	for (int i = 0; i < n; ++i) {
+		list<int> new_vertex;
+		adlist.push_back(new_vertex);
+	}
+}
+
+Graph::Graph(int v, int e) {
+	for (int i = 0; i < v; ++i) {
+		list<int> new_vertex;
+		adlist.push_back(new_vertex);
+	}
+	int a, b;
+	for (int i = 0; i < e; ++i) {
+		cin >> a >> b;
+		add_edge(a, b);
+	}
+}
+
+void Graph::add_vertex() {
+	list<int> new_vertex;
+	adlist.push_back(new_vertex);
+}
+
+int Graph::v() {
+	return adlist.size();
+}
+
+void Graph::add_edge(int m, int n) {
+	if (m >= v() || n >= v()) return;
+	adlist[m].push_back(n);
+	adlist[n].push_back(m);
+}
+
+list<int> Graph::adjacent_vertices(int n) {
+	return adlist[n];
+}
+
+bool Graph::connected(int m, int n) {
+	for (list<int>::iterator it = adlist[m].begin(); it != adlist[m].end(); ++it)
+		if (*it == n)
+			return true;
+	return false;
+}
+
+void Graph::show_connection() {
+	for (int i = 0; i < v(); ++i) {
+		cout << i << ": ";
+		list<int> adjacent = adjacent_vertices(i);
+		for (int w : adjacent)
+			cout << w << ' ';
+		cout << '\n';
+	}
+}
