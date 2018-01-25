@@ -1,0 +1,41 @@
+// A base class for various graph traversal algorithms
+
+class Paths {
+public:
+	Paths(Graph, int);
+	~Paths();
+	bool has_path_to(int);
+	stack<int> path_to(int);
+protected:
+	Graph graph;
+	int start;
+	bool* visited;
+	int* from_vertex;
+};
+
+Paths::Paths(Graph g, int s) :graph(g), start(s) {
+	visited = new bool[g.v()];
+	from_vertex = new int[g.v()];
+	for (int i = 0; i < g.v(); ++i) {
+		visited[i] = false;
+		from_vertex[i] = -1;
+	}
+}
+
+Paths::~Paths() {
+	delete visited;
+	delete from_vertex;
+}
+
+bool Paths::has_path_to(int v) {
+	return visited[v];
+}
+
+stack<int> Paths::path_to(int v) {
+	stack<int> path;
+	if (!has_path_to(v)) return path;
+	for (int x = v; x != start; x = from_vertex[x])
+		path.push(x);
+	path.push(start);
+	return path;
+}
