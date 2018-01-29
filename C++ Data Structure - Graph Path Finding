@@ -1,0 +1,107 @@
+class Graph {
+public:
+	Graph(int, int);
+	Graph(int);
+	~Graph();
+	void add_vertex();
+	void add_edge(int, int);
+
+//Determines whether two vertices are connected.
+	bool connected(int, int);
+	int v();
+//Returns the adjacent vertices of a vertex i.
+	list<int> adjacent_vertices(int);
+
+	void show_connection();
+private:
+
+	vector<list<int> >adlist;
+};
+
+
+Graph::~Graph() {}
+Graph::Graph(int n) {
+	for (int i = 0; i < n; ++i) {
+		list<int> new_vertex;
+		adlist.push_back(new_vertex);
+	}
+}
+Graph::Graph(int v, int e) {
+	for (int i = 0; i < v; ++i) {
+		list<int> new_vertex;
+		adlist.push_back(new_vertex);
+	}
+	int a, b;
+	for (int i = 0; i < e; ++i) {
+		cin >> a >> b;
+		add_edge(a, b);
+	}
+}
+
+void Graph::add_vertex() {
+	list<int> new_vertex;
+	adlist.push_back(new_vertex);
+}
+int Graph::v() {
+	return adlist.size();
+}
+void Graph::add_edge(int m, int n) {
+	if (m >= v() || n >= v()) return;
+	adlist[m].push_back(n);
+	adlist[n].push_back(m);
+}
+list<int> Graph::adjacent_vertices(int n) {
+	return adlist[n];
+}
+bool Graph::connected(int m, int n) {
+	for (list<int>::iterator it = adlist[m].begin(); it != adlist[m].end(); ++it)
+		if (*it == n)
+			return true;
+	return false;
+}
+void Graph::show_connection() {
+	for (int i = 0; i < v(); ++i) {
+		cout << i << ": ";
+		list<int> adjacent = adjacent_vertices(i);
+		for (int w : adjacent)
+			cout << w << ' ';
+		cout << '\n';
+	}
+}
+
+class Paths {
+public:
+	Paths(Graph, int);
+	~Paths();
+	bool has_path_to(int);
+	stack<int> path_to(int);
+protected:
+	Graph graph;
+	int start;
+	bool* visited;
+	int* from_vertex;
+};
+
+Paths::Paths(Graph g, int s) :graph(g), start(s) {
+	visited = new bool[g.v()];
+	from_vertex = new int[g.v()];
+	for (int i = 0; i < g.v(); ++i) {
+		visited[i] = false;
+		from_vertex[i] = -1;
+	}
+}
+Paths::~Paths() {
+	delete visited;
+	delete from_vertex;
+}
+bool Paths::has_path_to(int v) {
+	return visited[v];
+}
+stack<int> Paths::path_to(int v) {
+	stack<int> path;
+	if (!has_path_to(v)) return path;
+	for (int x = v; x != start; x = from_vertex[x])
+		path.push(x);
+	path.push(start);
+	return path;
+}
