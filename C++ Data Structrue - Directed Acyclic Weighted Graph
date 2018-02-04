@@ -1,0 +1,45 @@
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <utility>
+#include <list>
+
+using namespace std;
+
+class edge {
+	friend class DAG;
+public:
+	edge(int n, int w) :next(n), weight_to_next(w) {};
+private:
+	int next;
+	int weight_to_next;
+};
+
+class DAG {
+public:
+	DAG(int n);
+	int v() { return g.size(); }
+	void add_edge(int ,int, int);
+	bool connected(int, int);
+private:
+	vector<list<edge> >g;
+};
+
+DAG::DAG(int n) {
+	for (int i = 0; i < n; ++i) {
+		list<edge> l;
+		g.push_back(l);
+	}
+}
+
+void DAG::add_edge(int prev, int next, int w) {
+	edge e(next, w);
+	g[prev].push_back(e);
+}
+
+bool DAG::connected(int a, int b) {
+	for (edge e : g[a])
+		if (e.next == b)
+			return true;
+	return false;
+}
