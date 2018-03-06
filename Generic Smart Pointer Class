@@ -1,0 +1,15 @@
+template<class T> class smartPointer {
+private:
+	T* ptr;
+public:
+	smartPointer(T* p) :ptr(p) {};
+	~smartPointer() {
+		delete ptr;
+	}
+	T& operator*() {
+		return *ptr;
+	}
+	T* operator->() {
+		return ptr;
+	}
+};
